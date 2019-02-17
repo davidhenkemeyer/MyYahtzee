@@ -1,0 +1,501 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\MyYahtzee.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON    DISCARDABLE     "res\\MyYahtzee.ico"
+IDI_FIVE                ICON    DISCARDABLE     "res\\five.ico"
+IDI_FOUR                ICON    DISCARDABLE     "res\\four.ico"
+IDI_THREE               ICON    DISCARDABLE     "res\\three.ico"
+IDI_TWO                 ICON    DISCARDABLE     "res\\two.ico"
+IDI_ONE                 ICON    DISCARDABLE     "res\\one.ico"
+IDI_SIX                 ICON    DISCARDABLE     "res\\six.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOGEX 0, 0, 229, 204
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About David's Triple Yahtzee"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,89,183,50,14,WS_GROUP
+    LTEXT           "Static",IDC_DISPLAY_STATIC,7,7,215,160,0,
+                    WS_EX_DLGMODALFRAME | WS_EX_CLIENTEDGE
+END
+
+IDD_MYYAHTZEE_DIALOG DIALOGEX 0, 0, 301, 289
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "David's Triple Yahtzee"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "&Close",IDOK,7,268,68,14
+    ICON            IDI_SIX,IDC_DIE_FIVE,168,217,20,20,SS_NOTIFY
+    ICON            IDI_SIX,IDC_DIE_ONE,44,217,20,20,SS_NOTIFY
+    ICON            IDI_SIX,IDC_DIE_TWO,75,217,20,20,SS_NOTIFY
+    ICON            IDI_SIX,IDC_DIE_THREE,106,217,20,20,SS_NOTIFY
+    ICON            IDI_SIX,IDC_DIE_FOUR,137,217,20,20,SS_NOTIFY
+    PUSHBUTTON      "&Roll",IDC_ROLL_DICE,209,222,50,14
+    GROUPBOX        "Score Sheet",IDC_STATIC,7,7,287,181
+    RTEXT           "Ones",IDC_STATIC,39,30,18,8
+    RTEXT           "Twos",IDC_STATIC,39,43,18,8
+    RTEXT           "Threes",IDC_STATIC,34,56,23,8
+    RTEXT           "Fours",IDC_STATIC,39,69,18,8
+    RTEXT           "Fives",IDC_STATIC,39,82,18,8
+    RTEXT           "Sixes",IDC_STATIC,39,95,18,8
+    LTEXT           "x1",IDC_STATIC,73,14,8,8
+    LTEXT           "x2",IDC_STATIC,96,14,8,8
+    LTEXT           "x3",IDC_STATIC,120,14,8,8
+    EDITTEXT        IDC_ONE_1,66,28,21,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    EDITTEXT        IDC_TWO_1,66,41,21,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    EDITTEXT        IDC_THREE_1,66,54,21,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    EDITTEXT        IDC_SIX_1,66,93,21,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    EDITTEXT        IDC_FOUR_1,66,67,21,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    EDITTEXT        IDC_FIVE_1,66,80,21,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    EDITTEXT        IDC_ONE_2,90,28,21,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    EDITTEXT        IDC_TWO_2,90,41,21,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    EDITTEXT        IDC_THREE_2,90,54,21,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    EDITTEXT        IDC_SIX_2,90,93,21,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    EDITTEXT        IDC_FOUR_2,90,67,21,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    EDITTEXT        IDC_FIVE_2,90,80,21,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    EDITTEXT        IDC_ONE_3,114,28,21,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    EDITTEXT        IDC_TWO_3,114,41,21,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    EDITTEXT        IDC_THREE_3,114,54,21,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    EDITTEXT        IDC_SIX_3,114,93,21,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    EDITTEXT        IDC_FOUR_3,114,67,21,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    EDITTEXT        IDC_FIVE_3,114,80,21,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    RTEXT           "Total",IDC_STATIC,40,119,17,8
+    RTEXT           "Bonus",IDC_STATIC,36,136,21,8
+    RTEXT           "Section Total",IDC_STATIC,14,153,43,8
+    EDITTEXT        IDC_TOTAL_1,66,117,21,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_READONLY | ES_NUMBER
+    EDITTEXT        IDC_TOTAL_2,90,117,21,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_READONLY | ES_NUMBER
+    EDITTEXT        IDC_TOTAL_3,114,117,21,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_READONLY | ES_NUMBER
+    EDITTEXT        IDC_BONUS_1,66,134,21,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_READONLY | ES_NUMBER
+    EDITTEXT        IDC_BONUS_2,90,134,21,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_READONLY | ES_NUMBER
+    EDITTEXT        IDC_BONUS_3,114,134,21,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_READONLY | ES_NUMBER
+    EDITTEXT        IDC_SECTIONONE_1,66,151,21,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_READONLY | ES_NUMBER
+    EDITTEXT        IDC_SECTIONONE_2,90,151,21,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_READONLY | ES_NUMBER
+    EDITTEXT        IDC_SECTIONONE_3,114,151,21,12,ES_CENTER | 
+                    ES_AUTOHSCROLL | ES_READONLY | ES_NUMBER
+    RTEXT           "3 of a Kind",IDC_STATIC,155,30,35,8
+    RTEXT           "4 of a Kind",IDC_STATIC,155,43,35,8
+    RTEXT           "Full House",IDC_STATIC,156,56,34,8
+    RTEXT           "Small Straight",IDC_STATIC,146,69,44,8
+    RTEXT           "Large Straight",IDC_STATIC,145,82,45,8
+    RTEXT           "Yahtzee!",IDC_STATIC,161,95,29,8
+    RTEXT           "Chance",IDC_STATIC,164,108,26,8
+    LTEXT           "x1",IDC_STATIC,207,14,8,8
+    LTEXT           "x2",IDC_STATIC,229,14,8,8
+    LTEXT           "x3",IDC_STATIC,253,14,8,8
+    EDITTEXT        IDC_3OFKIND_1,199,28,21,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    EDITTEXT        IDC_4OFKIND_1,199,41,21,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    EDITTEXT        IDC_FULLHOUSE_1,199,54,21,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    EDITTEXT        IDC_YAHTZEE_1,199,93,21,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    EDITTEXT        IDC_SMALLSTR_1,199,67,21,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    EDITTEXT        IDC_LARGESTR_1,199,80,21,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    EDITTEXT        IDC_3OFKIND_2,223,28,21,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    EDITTEXT        IDC_4OFKIND_2,223,41,21,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    EDITTEXT        IDC_FULLHOUSE_2,223,54,21,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    EDITTEXT        IDC_YAHTZEE_2,223,93,21,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    EDITTEXT        IDC_SMALLSTR_2,223,67,21,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    EDITTEXT        IDC_LARGESTR_2,223,80,21,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    EDITTEXT        IDC_3OFKIND_3,247,28,21,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    EDITTEXT        IDC_4OFKIND_3,247,41,21,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    EDITTEXT        IDC_FULLHOUSE_3,247,54,21,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    EDITTEXT        IDC_YAHTZEE_3,247,93,21,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    EDITTEXT        IDC_SMALLSTR_3,247,67,21,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    EDITTEXT        IDC_LARGESTR_3,247,80,21,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    EDITTEXT        IDC_CHANCE_1,199,106,21,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    EDITTEXT        IDC_CHANCE_2,223,106,21,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    EDITTEXT        IDC_CHANCE_3,247,106,21,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    RTEXT           "Section Total",IDC_STATIC,147,133,43,8
+    RTEXT           "Game Total",IDC_STATIC,152,150,38,8
+    EDITTEXT        IDC_SECTIONTWO_1,199,131,21,12,ES_CENTER | 
+                    ES_AUTOHSCROLL | ES_READONLY | ES_NUMBER
+    EDITTEXT        IDC_SECTIONTWO_2,223,131,21,12,ES_CENTER | 
+                    ES_AUTOHSCROLL | ES_READONLY | ES_NUMBER
+    EDITTEXT        IDC_SECTIONTWO_3,247,131,21,12,ES_CENTER | 
+                    ES_AUTOHSCROLL | ES_READONLY | ES_NUMBER
+    EDITTEXT        IDC_GAMETOTAL,199,148,69,12,ES_CENTER | ES_AUTOHSCROLL | 
+                    ES_READONLY
+    GROUPBOX        "Dice",IDC_DICEFRAME,7,196,287,56
+    CTEXT           "Hold",IDC_HOLD5,170,238,16,8
+    CTEXT           "Hold",IDC_HOLD4,139,238,16,8
+    CTEXT           "Hold",IDC_HOLD3,108,238,16,8
+    CTEXT           "Hold",IDC_HOLD2,77,238,16,8
+    CTEXT           "Hold",IDC_HOLD1,46,238,16,8
+    CTEXT           "Click on the dice you wish to hold.",IDC_CLICKONDICE,98,
+                    204,108,8
+    PUSHBUTTON      "&Undo",IDC_UNDO,117,167,68,14
+    PUSHBUTTON      "New High Score",IDC_BUTTON1,7,254,63,12,NOT WS_VISIBLE
+    PUSHBUTTON      "&High Scores",IDC_VIEWHIGHSCORES,80,268,68,14
+    PUSHBUTTON      "Unlimited Rolls",IDC_BUTTON3,212,254,82,12,NOT 
+                    WS_VISIBLE
+    PUSHBUTTON      "Reset &Game",IDC_RESETGAME,153,268,68,14
+    PUSHBUTTON      "&About...",IDC_ABOUT,226,268,68,14
+    PUSHBUTTON      "&Settings...",IDC_SETTINGS,76,254,52,12,NOT WS_VISIBLE
+    PUSHBUTTON      "Yeah baby!",IDC_BUTTON2,134,254,73,12,NOT WS_VISIBLE
+END
+
+IDD_YAHTZEE DIALOG DISCARDABLE  0, 0, 353, 90
+STYLE DS_MODALFRAME | WS_POPUP
+FONT 8, "MS Sans Serif"
+BEGIN
+    CTEXT           "Yahtzee!",IDC_YAHTZEE,7,7,339,76,SS_CENTERIMAGE
+END
+
+IDD_HIGHSCORE DIALOG DISCARDABLE  0, 0, 154, 71
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "New High Score!"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_EDIT1,45,7,102,14,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,24,50,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,80,50,50,14
+    LTEXT           "Name:  ",IDC_STATIC,9,9,26,8
+    LTEXT           "Score:",IDC_STATIC,9,28,22,8
+    LTEXT           "Static",IDC_SCORE,45,28,19,8
+END
+
+IDD_HIGHSCORESHEET DIALOG DISCARDABLE  0, 0, 194, 167
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "High Scores"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,94,146,93,14
+    PUSHBUTTON      "Clear High Scores",IDC_CLEAR,7,146,79,14
+    LTEXT           "Player Name",IDC_PLAYERNAME,14,7,69,17
+    CTEXT           "Score",IDC_SCORE,96,7,44,15
+    CTEXT           "Date",IDC_DATE,143,7,44,12
+    RTEXT           "1.",IDC_STATIC,10,26,8,8
+    RTEXT           "2.",IDC_STATIC,10,37,8,8
+    RTEXT           "3.",IDC_STATIC,10,48,8,8
+    RTEXT           "4.",IDC_STATIC,10,59,8,8
+    RTEXT           "5.",IDC_STATIC,10,70,8,8
+    RTEXT           "6.",IDC_STATIC,10,81,8,8
+    RTEXT           "7.",IDC_STATIC,10,92,8,8
+    RTEXT           "8.",IDC_STATIC,10,103,8,8
+    RTEXT           "9.",IDC_STATIC,10,114,8,8
+    RTEXT           "10.",IDC_STATIC,7,125,11,8
+    LTEXT           "Static",IDC_PLAYER1,25,26,70,8
+    LTEXT           "Static",IDC_PLAYER3,25,48,70,8
+    LTEXT           "Static",IDC_PLAYER4,25,59,70,8
+    LTEXT           "Static",IDC_PLAYER5,25,70,70,8
+    LTEXT           "Static",IDC_PLAYER6,25,81,70,8
+    LTEXT           "Static",IDC_PLAYER7,25,92,70,8
+    LTEXT           "Static",IDC_PLAYER8,25,103,70,8
+    LTEXT           "Static",IDC_PLAYER9,25,114,70,8
+    LTEXT           "Static",IDC_PLAYER10,25,125,70,8
+    LTEXT           "Static",IDC_PLAYER2,25,37,70,8
+    CTEXT           "Static",IDC_SCORE1,96,25,44,8
+    CTEXT           "Static",IDC_SCORE2,96,37,44,8
+    CTEXT           "Static",IDC_SCORE3,96,48,44,8
+    CTEXT           "Static",IDC_SCORE4,96,59,44,8
+    CTEXT           "Static",IDC_SCORE5,96,70,44,8
+    CTEXT           "Static",IDC_SCORE6,96,81,44,8
+    CTEXT           "Static",IDC_SCORE7,96,92,44,8
+    CTEXT           "Static",IDC_SCORE8,96,103,44,8
+    CTEXT           "Static",IDC_SCORE9,96,114,44,8
+    CTEXT           "Static",IDC_SCORE10,96,125,44,8
+    CTEXT           "Static",IDC_DATE1,143,25,44,8
+    CTEXT           "Static",IDC_DATE2,143,37,44,8
+    CTEXT           "Static",IDC_DATE3,143,48,44,8
+    CTEXT           "Static",IDC_DATE4,143,59,44,8
+    CTEXT           "Static",IDC_DATE5,143,70,44,8
+    CTEXT           "Static",IDC_DATE6,143,81,44,8
+    CTEXT           "Static",IDC_DATE7,143,92,44,8
+    CTEXT           "Static",IDC_DATE8,143,103,44,8
+    CTEXT           "Static",IDC_DATE9,143,114,44,8
+    CTEXT           "Static",IDC_DATE10,143,125,44,8
+END
+
+IDD_SETTINGS DIALOG DISCARDABLE  0, 0, 188, 138
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Settings"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,63,117,50,14
+    GROUPBOX        "Sounds",IDC_STATIC,32,7,123,97
+    CONTROL         "Enable &Dice Roll Sound",IDC_DICEROLLSOUND,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,44,23,91,10
+    CONTROL         "Enable &Yahtzee Sounds",IDC_YAHTZEESOUND,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,44,39,92,10
+    CONTROL         "Enable &Exit Program Sounds",IDC_EXITSOUND,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,44,54,105,10
+    CONTROL         "Enable &Scoresheet Sound",IDC_SCORESOUND,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,44,68,99,10
+    CONTROL         "Enable &High Score Sounds",IDC_HIGHSCORESOUND,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,44,84,101,10
+END
+
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "Comments", "\0"
+            VALUE "CompanyName", "\0"
+            VALUE "FileDescription", "David's Triple Yahtzee\0"
+            VALUE "FileVersion", "1.01\0"
+            VALUE "InternalName", "MyYahtzee\0"
+            VALUE "LegalCopyright", "Copyright (C) 1999\0"
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "TripleYahtzee.EXE\0"
+            VALUE "PrivateBuild", "\0"
+            VALUE "ProductName", "David's Triple Yahtzee\0"
+            VALUE "ProductVersion", "1.01\0"
+            VALUE "SpecialBuild", "\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+#endif    // !_MAC
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 222
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 197
+    END
+
+    IDD_MYYAHTZEE_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 294
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 282
+    END
+
+    IDD_YAHTZEE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 346
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 83
+    END
+
+    IDD_HIGHSCORE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 147
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 64
+    END
+
+    IDD_HIGHSCORESHEET, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 187
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 160
+    END
+
+    IDD_SETTINGS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 181
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 131
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Cursor
+//
+
+IDC_PENCIL              CURSOR  DISCARDABLE     "res\\cursor1.cur"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_BACKGROUND          BITMAP  DISCARDABLE     "res\\BKGR.bmp"
+BITMAP1                 BITMAP  DISCARDABLE     "res\\backgrou.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_ABOUTBOX            "&About MyYahtzee..."
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif //_WIN32
+#include "res\MyYahtzee.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"         // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

@@ -1,0 +1,45 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: MyYahtzee - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\David\LOCALS~1\Temp\RSP2A.tmp" with contents
+[
+/nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Fp"Release/MyYahtzee.pch" /Yu"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
+"C:\projects\MyYahtzee\MyYahtzeeDlg.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\David\LOCALS~1\Temp\RSP2A.tmp" 
+Creating temporary file "C:\DOCUME~1\David\LOCALS~1\Temp\RSP2B.tmp" with contents
+[
+winmm.lib /nologo /subsystem:windows /incremental:no /pdb:"Release/TripleYahtzee.pdb" /machine:I386 /out:"Release\TripleYahtzee.exe" 
+.\Release\CreditStatic.obj
+.\Release\HighScore.obj
+.\Release\HighScoreDlg.obj
+.\Release\HighScoreSheet.obj
+.\Release\HighScoreSheetDlg.obj
+.\Release\MyEditCtrl.obj
+.\Release\MyYahtzee.obj
+.\Release\MyYahtzeeDlg.obj
+.\Release\ReadOnlyEditCtrl.obj
+.\Release\RegKey.obj
+.\Release\SettingsDlg.obj
+.\Release\StdAfx.obj
+.\Release\YahtzeeDlg.obj
+.\Release\MyYahtzee.res
+]
+Creating command line "link.exe @C:\DOCUME~1\David\LOCALS~1\Temp\RSP2B.tmp"
+<h3>Output Window</h3>
+Compiling...
+MyYahtzeeDlg.cpp
+Linking...
+
+
+
+<h3>Results</h3>
+TripleYahtzee.exe - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

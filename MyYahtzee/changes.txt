@@ -1,0 +1,11 @@
+Triple Yahtzee ToDos:
+
+- Fix Undo Bug (undo after third roll allows more rolls) - DONE
+- Randomized sounds? - DONE
+- Customize button
+	- Turn on/off sound events - DONE
+	- Allow specification of sounds? 
+- Scoresheet objects
+- 2 player mode?
+- OnCancel should do the same as OnOK (Are you sure you wish to stop playing?)
+- After third roll, text should say "Choose a score cell" or something like that.  
