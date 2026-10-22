@@ -64,7 +64,7 @@
 * Added "Intel Proprietary" header and VSS History keyword
 
 *******************************************************************************/
-// RegKey.h: interface for the CRegKey class.
+// RegKey.h: interface for the CMyRegKey class.
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -77,7 +77,7 @@
 #pragma once
 #endif // _MSC_VER >= 1000
 
-class CRegKey  
+class CMyRegKey  
 {
 private:		// Private members
 	HKEY	m_hKey;
@@ -89,9 +89,9 @@ private:		// Private methods
 	void Init();
 	CString GetStringFromID(UINT ID);
 public:			// Constructors and destructor
-	CRegKey();
-	CRegKey(const CRegKey& rhs);
-	virtual ~CRegKey();
+	CMyRegKey();
+	CMyRegKey(const CMyRegKey& rhs);
+	virtual ~CMyRegKey();
 public:			// Public methods
 	DWORD GetRegType(CString& ValueName);
 
@@ -122,9 +122,9 @@ public:			// Public methods
 	void GetValue(const CString& ValueName, BYTE* Value, DWORD* cbData);
 	void GetValue(UINT ValueNameID, BYTE* Value, DWORD* cbData);
 
-	void CRegKey::GetValue(const CString& ValueName, 
+	void GetValue(const CString& ValueName, 
 		CArray<CString, CString&>* Value, DWORD* cbData = NULL);
-	void CRegKey::GetValue(UINT ValueNameID, 
+	void GetValue(UINT ValueNameID, 
 		CArray<CString, CString&>* Value, DWORD* cbData = NULL);
 
 	void SetValue(const CString& ValueName, DWORD Value);

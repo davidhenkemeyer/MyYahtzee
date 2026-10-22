@@ -44,7 +44,7 @@ BOOL CMyYahtzeeApp::InitInstance()
 {
 	AfxEnableControlContainer();
 
-	CRegKey regKey;
+	CMyRegKey regKey;
 	regKey.Create(HKEY_LOCAL_MACHINE, "Software\\Henkemeyer Software\\Triple Yahztee");
 	regKey.Close();
 	// Standard initialization

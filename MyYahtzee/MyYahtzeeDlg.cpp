@@ -235,7 +235,7 @@ BOOL CMyYahtzeeDlg::OnInitDialog()
 	CDialog::OnInitDialog();
 
 	DWORD HiScoreSound, DiceRollSound, ExitSound, ScoreSound, YahtzeeSound;
-	CRegKey regKey;
+	CMyRegKey regKey;
 	regKey.Open(HKEY_LOCAL_MACHINE, "Software\\Henkemeyer Software\\Triple Yahztee");
 
 	regKey.GetValue("HiScoreSound", &HiScoreSound, 1);

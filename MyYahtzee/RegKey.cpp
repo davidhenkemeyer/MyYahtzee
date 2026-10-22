@@ -44,7 +44,7 @@
  * Added "Intel Proprietary" header and VSS History keyword
 
 *******************************************************************************/
-// RegKey.cpp: implementation of the CRegKey class.
+// RegKey.cpp: implementation of the CMyRegKey class.
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -55,25 +55,25 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CRegKey::CRegKey()
+CMyRegKey::CMyRegKey()
 {
 	Init();
 }
 
-CRegKey::CRegKey(const CRegKey& rhs)
+CMyRegKey::CMyRegKey(const CMyRegKey& rhs)
 {
     UNREFERENCED_PARAMETER(rhs);
 	// Don't allow copies of this object.
-	TRACE("CRegKey doesn't allow object copies!\n");
+	TRACE("CMyRegKey doesn't allow object copies!\n");
 	ASSERT(FALSE);
 }
 
-CRegKey::~CRegKey()
+CMyRegKey::~CMyRegKey()
 {
 	Close();
 }
 
-void CRegKey::Init()
+void CMyRegKey::Init()
 {
 	m_hKey = NULL;
 	m_Opened = FALSE;
@@ -81,7 +81,7 @@ void CRegKey::Init()
 	m_EnumIndex = 0;
 }
 
-BOOL CRegKey::Open(HKEY hKey, const CString& SubKey, BOOL ReadWrite)
+BOOL CMyRegKey::Open(HKEY hKey, const CString& SubKey, BOOL ReadWrite)
 {
 	REGSAM	Sam;
 
@@ -97,12 +97,12 @@ BOOL CRegKey::Open(HKEY hKey, const CString& SubKey, BOOL ReadWrite)
 	return m_Opened;
 }
 
-BOOL CRegKey::Open(HKEY hKey, UINT SubKeyID, BOOL ReadWrite)
+BOOL CMyRegKey::Open(HKEY hKey, UINT SubKeyID, BOOL ReadWrite)
 {
 	return Open(hKey, GetStringFromID(SubKeyID), ReadWrite);
 }
 
-BOOL CRegKey::Create(HKEY hKey, const CString& SubKey, 
+BOOL CMyRegKey::Create(HKEY hKey, const CString& SubKey, 
 	BOOL ReadWrite, BOOL Volatile)
 {
 	DWORD	dwReason;
@@ -122,34 +122,34 @@ BOOL CRegKey::Create(HKEY hKey, const CString& SubKey,
 	return m_Opened;
 }
 
-BOOL CRegKey::Create(HKEY hKey, UINT SubKeyID, BOOL ReadWrite, BOOL Volatile)
+BOOL CMyRegKey::Create(HKEY hKey, UINT SubKeyID, BOOL ReadWrite, BOOL Volatile)
 {
 	return Create(hKey, GetStringFromID(SubKeyID), ReadWrite, Volatile);
 }
 
-BOOL CRegKey::SubKeyExists(const CString& SubKey)
+BOOL CMyRegKey::SubKeyExists(const CString& SubKey)
 {
-	CRegKey	TempKey;
+	CMyRegKey	TempKey;
 	return TempKey.Open(m_hKey, SubKey, FALSE);
 }
 
-BOOL CRegKey::SubKeyExists(UINT SubKeyID)
+BOOL CMyRegKey::SubKeyExists(UINT SubKeyID)
 {
 	return SubKeyExists(GetStringFromID(SubKeyID));
 }
 
-HKEY CRegKey::GetHKey()
+HKEY CMyRegKey::GetHKey()
 {
 	return m_hKey;
 }
 
-LONG CRegKey::LastResult()
+LONG CMyRegKey::LastResult()
 {
 	return m_Result;
 }
 
 // REG_DWORD
-void CRegKey::GetValue(const CString& ValueName, DWORD* Value, DWORD Default)
+void CMyRegKey::GetValue(const CString& ValueName, DWORD* Value, DWORD Default)
 {
 	DWORD	dwRegType = REG_DWORD;
 	DWORD	dwSize = sizeof(DWORD);
@@ -169,13 +169,13 @@ void CRegKey::GetValue(const CString& ValueName, DWORD* Value, DWORD Default)
 		*Value = Default;
 }
 
-void CRegKey::GetValue(UINT ValueNameID, DWORD* Value, DWORD Default)
+void CMyRegKey::GetValue(UINT ValueNameID, DWORD* Value, DWORD Default)
 {
 	GetValue(GetStringFromID(ValueNameID), Value, Default);
 }
 
 // REG_SZ
-void CRegKey::GetValue(const CString& ValueName, CString* Value,
+void CMyRegKey::GetValue(const CString& ValueName, CString* Value,
 	CString Default, BOOL ExpandSZ)
 {
 	DWORD	dwRegType = REG_SZ;
@@ -228,13 +228,13 @@ void CRegKey::GetValue(const CString& ValueName, CString* Value,
 	}
 }
 
-void CRegKey::GetValue(UINT ValueNameID, CString* Value,
+void CMyRegKey::GetValue(UINT ValueNameID, CString* Value,
 	CString Default, BOOL ExpandSZ)
 {
 	GetValue(GetStringFromID(ValueNameID), Value, Default, ExpandSZ);
 }
 
-void CRegKey::GetValue(UINT ValueNameID, CString* Value,
+void CMyRegKey::GetValue(UINT ValueNameID, CString* Value,
 	UINT DefaultID, BOOL ExpandSZ)
 {
 	GetValue(GetStringFromID(ValueNameID), Value, 
@@ -242,7 +242,7 @@ void CRegKey::GetValue(UINT ValueNameID, CString* Value,
 }
 
 // REG_BINARY
-void CRegKey::GetValue(const CString& ValueName, BYTE* Value,
+void CMyRegKey::GetValue(const CString& ValueName, BYTE* Value,
 	DWORD* cbData)
 {
 	DWORD	dwRegType = REG_BINARY;
@@ -264,14 +264,14 @@ void CRegKey::GetValue(const CString& ValueName, BYTE* Value,
 }
 
 
-void CRegKey::GetValue(UINT ValueNameID, BYTE* Value,
+void CMyRegKey::GetValue(UINT ValueNameID, BYTE* Value,
 	DWORD* cbData)
 {
 	GetValue(GetStringFromID(ValueNameID), Value, cbData);
 }
 
 // REG_MULTI_SZ
-void CRegKey::GetValue(const CString& ValueName, 
+void CMyRegKey::GetValue(const CString& ValueName, 
 	CArray<CString, CString&>* Value, DWORD* cbData)
 {
 	DWORD	dwRegType = REG_MULTI_SZ;
@@ -321,14 +321,14 @@ void CRegKey::GetValue(const CString& ValueName,
 	free(Buffer);
 }
 
-void CRegKey::GetValue(UINT ValueNameID, CArray<CString, CString&>* Value,
+void CMyRegKey::GetValue(UINT ValueNameID, CArray<CString, CString&>* Value,
 	DWORD* cbData)
 {
 	GetValue(GetStringFromID(ValueNameID), Value, cbData);
 }
 
 // REG_DWORD
-void CRegKey::SetValue(const CString& ValueName, DWORD Value)
+void CMyRegKey::SetValue(const CString& ValueName, DWORD Value)
 {
 	m_Result = ERROR_SUCCESS;
 	
@@ -339,13 +339,13 @@ void CRegKey::SetValue(const CString& ValueName, DWORD Value)
 		(BYTE *)&Value, sizeof(DWORD));
 }
 
-void CRegKey::SetValue(UINT ValueNameID, DWORD Value)
+void CMyRegKey::SetValue(UINT ValueNameID, DWORD Value)
 {
 	SetValue(GetStringFromID(ValueNameID), Value);
 }
 
 // REG_SZ
-void CRegKey::SetValue(const CString& ValueName, CString Value, BOOL ExpandSZ)
+void CMyRegKey::SetValue(const CString& ValueName, CString Value, BOOL ExpandSZ)
 {
 	m_Result = ERROR_SUCCESS;
 	DWORD dwType = REG_SZ;
@@ -360,13 +360,13 @@ void CRegKey::SetValue(const CString& ValueName, CString Value, BOOL ExpandSZ)
 		(BYTE *)(LPCTSTR)Value, Value.GetLength() + 1);
 }
 
-void CRegKey::SetValue(UINT ValueNameID, CString Value, BOOL ExpandSZ)
+void CMyRegKey::SetValue(UINT ValueNameID, CString Value, BOOL ExpandSZ)
 {
 	SetValue(GetStringFromID(ValueNameID), Value, ExpandSZ);
 }
 
 // REG_BINARY
-void CRegKey::SetValue(const CString& ValueName, BYTE* Value, DWORD cbData)
+void CMyRegKey::SetValue(const CString& ValueName, BYTE* Value, DWORD cbData)
 {
 	m_Result = ERROR_SUCCESS;
 	
@@ -377,13 +377,13 @@ void CRegKey::SetValue(const CString& ValueName, BYTE* Value, DWORD cbData)
 		Value, cbData);
 }
 
-void CRegKey::SetValue(UINT ValueNameID, BYTE* Value, DWORD cbData)
+void CMyRegKey::SetValue(UINT ValueNameID, BYTE* Value, DWORD cbData)
 {
 	SetValue(GetStringFromID(ValueNameID), Value, cbData);
 }
 
 // REG_MULTI_SZ
-void CRegKey::SetValue(const CString& ValueName, 
+void CMyRegKey::SetValue(const CString& ValueName, 
 	const CArray<CString, CString&>& Value)
 {
 	m_Result = ERROR_SUCCESS;
@@ -419,13 +419,13 @@ void CRegKey::SetValue(const CString& ValueName,
 	free(Buffer);
 }
 
-void CRegKey::SetValue(UINT ValueNameID, 
+void CMyRegKey::SetValue(UINT ValueNameID, 
 	const CArray<CString, CString&>& Value)
 {
 	SetValue(GetStringFromID(ValueNameID), Value);
 }
 
-BOOL CRegKey::EnumSubKey(CString* pSubKeyName)
+BOOL CMyRegKey::EnumSubKey(CString* pSubKeyName)
 {
 	DWORD		cbName = 256;
 	TCHAR		TempBuffer[256];
@@ -452,7 +452,7 @@ BOOL CRegKey::EnumSubKey(CString* pSubKeyName)
 }
 
 
-BOOL CRegKey::EnumValue(CString* pValueName)
+BOOL CMyRegKey::EnumValue(CString* pValueName)
 {
 	DWORD		cbName = 256;
 	TCHAR		TempBuffer[256];
@@ -478,9 +478,9 @@ BOOL CRegKey::EnumValue(CString* pValueName)
 	return (m_Result == ERROR_SUCCESS);
 }
 
-BOOL CRegKey::DeleteSubKey(const CString& SubKeyName)
+BOOL CMyRegKey::DeleteSubKey(const CString& SubKeyName)
 {
-	CRegKey SubKey;
+	CMyRegKey SubKey;
 	CString SubSubKeyName;
 	CArray <CString, CString&> SubSubKeyList;
 	
@@ -518,17 +518,17 @@ BOOL CRegKey::DeleteSubKey(const CString& SubKeyName)
 	return (m_Result == ERROR_SUCCESS);
 }
 
-BOOL CRegKey::DeleteSubKey(UINT SubKeyNameID)
+BOOL CMyRegKey::DeleteSubKey(UINT SubKeyNameID)
 {
 	return DeleteSubKey(GetStringFromID(SubKeyNameID));
 }
 
-BOOL CRegKey::DeleteValue(UINT SubKeyNameID)
+BOOL CMyRegKey::DeleteValue(UINT SubKeyNameID)
 {
 	return DeleteValue(GetStringFromID(SubKeyNameID));
 }
 
-BOOL CRegKey::DeleteValue(const CString& ValueName)
+BOOL CMyRegKey::DeleteValue(const CString& ValueName)
 {
 	if (!m_Opened)
 		return FALSE;
@@ -538,7 +538,7 @@ BOOL CRegKey::DeleteValue(const CString& ValueName)
 	return (m_Result == ERROR_SUCCESS);
 }
 
-void CRegKey::Close()
+void CMyRegKey::Close()
 {
 	if (m_Opened)
 	{
@@ -547,7 +547,7 @@ void CRegKey::Close()
 	}
 }
 
-CString CRegKey::GetStringFromID(UINT ID)
+CString CMyRegKey::GetStringFromID(UINT ID)
 {
 	CString String;
 
@@ -557,7 +557,7 @@ CString CRegKey::GetStringFromID(UINT ID)
 }
 
 
-DWORD CRegKey::GetRegType(CString& ValueName)
+DWORD CMyRegKey::GetRegType(CString& ValueName)
 {
 	DWORD	dwRegType = NULL;
 	DWORD	dwSize = 0;
