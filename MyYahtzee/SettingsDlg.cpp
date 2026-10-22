@@ -54,7 +54,7 @@ void CSettingsDlg::OnOK()
 {
 	UpdateData(TRUE);
 
-	CRegKey regKey;
+	CMyRegKey regKey;
 	regKey.Open(HKEY_LOCAL_MACHINE, "Software\\Henkemeyer Software\\Triple Yahztee", TRUE);
 
 	regKey.SetValue("HiScoreSound", m_HiScore);
