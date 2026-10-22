@@ -408,7 +408,7 @@ void CMyYahtzeeDlg::OnRollDice()
 	m_RollDice.EnableWindow(FALSE);
 }
 
-void CMyYahtzeeDlg::OnTimer(UINT nIDEvent) 
+void CMyYahtzeeDlg::OnTimer(UINT_PTR nIDEvent) 
 {
 	if (nIDEvent == 3)
 	{

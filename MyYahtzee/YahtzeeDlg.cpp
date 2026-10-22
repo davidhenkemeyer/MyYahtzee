@@ -57,7 +57,7 @@ BOOL CYahtzeeDlg::OnInitDialog()
 	              // EXCEPTION: OCX Property Pages should return FALSE
 }
 
-void CYahtzeeDlg::OnTimer(UINT nIDEvent) 
+void CYahtzeeDlg::OnTimer(UINT_PTR nIDEvent) 
 {
 	if (m_Display)	
 	{
