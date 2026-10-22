@@ -15,7 +15,7 @@ add_executable(TripleYahtzee WIN32 ${SOURCES} ${SRC_DIR}/MyYahtzee.rc)
 target_include_directories(TripleYahtzee PRIVATE ${SRC_DIR})
 target_compile_definitions(TripleYahtzee PRIVATE _MBCS WIN32 _WINDOWS _CRT_SECURE_NO_WARNINGS _CRT_NONSTDC_NO_WARNINGS)
 # VC6-era code: old for-loop scoping, relaxed conformance
-target_compile_options(TripleYahtzee PRIVATE /W3 /EHsc /permissive- /Zc:forScope-)
+target_compile_options(TripleYahtzee PRIVATE /W3 /EHsc /permissive- /Zc:forScope- /Zc:strictStrings-)
 target_link_libraries(TripleYahtzee PRIVATE winmm)
 
 # Sounds are loaded from the working directory at runtime
