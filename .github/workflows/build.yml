@@ -1,7 +1,10 @@
 name: Build Windows exe
 on:
   push:
+    tags: ['v*']
   workflow_dispatch:
+permissions:
+  contents: write
 jobs:
   build:
     runs-on: windows-latest
@@ -24,3 +27,13 @@ jobs:
         with:
           name: TripleYahtzee-win
           path: dist/
+      - name: Zip
+        if: startsWith(github.ref, 'refs/tags/')
+        shell: pwsh
+        run: Compress-Archive dist/* TripleYahtzee-win.zip
+      - uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            TripleYahtzee-win.zip
+            dist/TripleYahtzee.exe
