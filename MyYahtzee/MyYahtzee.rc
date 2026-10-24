@@ -102,7 +102,6 @@ BEGIN
     ICON            IDI_SIX,IDC_DIE_THREE,106,217,20,20,SS_NOTIFY
     ICON            IDI_SIX,IDC_DIE_FOUR,137,217,20,20,SS_NOTIFY
     PUSHBUTTON      "&Roll",IDC_ROLL_DICE,209,222,50,14
-    GROUPBOX        "Score Sheet",IDC_STATIC,7,7,287,181
     RTEXT           "Ones",IDC_STATIC,39,30,18,8
     RTEXT           "Twos",IDC_STATIC,39,43,18,8
     RTEXT           "Threes",IDC_STATIC,34,56,23,8
@@ -231,7 +230,6 @@ BEGIN
                     ES_AUTOHSCROLL | ES_READONLY | ES_NUMBER
     EDITTEXT        IDC_GAMETOTAL,199,148,69,12,ES_CENTER | ES_AUTOHSCROLL | 
                     ES_READONLY
-    GROUPBOX        "Dice",IDC_DICEFRAME,7,196,287,56
     CTEXT           "Hold",IDC_HOLD5,170,238,16,8
     CTEXT           "Hold",IDC_HOLD4,139,238,16,8
     CTEXT           "Hold",IDC_HOLD3,108,238,16,8
@@ -248,6 +246,10 @@ BEGIN
     PUSHBUTTON      "&About...",IDC_ABOUT,226,268,68,14
     PUSHBUTTON      "&Settings...",IDC_SETTINGS,76,254,52,12,NOT WS_VISIBLE
     PUSHBUTTON      "Yeah baby!",IDC_BUTTON2,134,254,73,12,NOT WS_VISIBLE
+    // Group boxes go last (bottom of the z-order) and clip their siblings,
+    // otherwise repainting them erases the dice/score fields drawn inside.
+    GROUPBOX        "Score Sheet",IDC_STATIC,7,7,287,181,WS_CLIPSIBLINGS
+    GROUPBOX        "Dice",IDC_DICEFRAME,7,196,287,56,WS_CLIPSIBLINGS
 END
 
 IDD_YAHTZEE DIALOG DISCARDABLE  0, 0, 353, 90

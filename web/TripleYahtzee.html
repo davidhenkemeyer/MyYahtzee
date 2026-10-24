@@ -1,0 +1,742 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Triple Yahtzee</title>
+<style>
+  :root {
+    --felt: #1f5f3f;
+    --felt-hi: #2b7a52;
+    --felt-lo: #143f2a;
+    --paper: #fbf7ea;
+    --paper-alt: #f3edd8;
+    --ink: #1d1d1b;
+    --muted: #7b7563;
+    --line: #dcd3b6;
+    --accent: #b3261e;
+    --gold: #f2c230;
+    --btn: #f6f2e4;
+    --btn-hover: #ffffff;
+    --pencil: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M3 21l1.2-4.6L16.5 4.1a2 2 0 0 1 2.8 0l.6.6a2 2 0 0 1 0 2.8L7.6 19.8z' fill='%23f2c230' stroke='%231d1d1b' stroke-width='1.3' stroke-linejoin='round'/%3E%3Cpath d='M3 21l1.2-4.6 3.4 3.4z' fill='%23e9d3a8' stroke='%231d1d1b' stroke-width='1.3' stroke-linejoin='round'/%3E%3Cpath d='M15 5.6l3.4 3.4' stroke='%231d1d1b' stroke-width='1.3'/%3E%3C/svg%3E") 2 22, pointer;
+  }
+  * { box-sizing: border-box; }
+  html { color-scheme: light; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: radial-gradient(ellipse at 50% 0%, var(--felt-hi), var(--felt) 45%, var(--felt-lo));
+    background-color: var(--felt);
+    color: var(--ink);
+    font: 15px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 20px 16px 32px;
+  }
+  .app { width: 100%; max-width: 760px; min-width: 0; }
+  header {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 12px; flex-wrap: wrap; margin-bottom: 14px; color: #fff;
+  }
+  h1 {
+    margin: 0; font: 700 28px/1.1 Georgia, "Times New Roman", serif;
+    letter-spacing: .5px; text-shadow: 0 2px 0 rgba(0,0,0,.25);
+  }
+  h1 span { color: var(--gold); }
+  .total-badge { font-size: 14px; opacity: .9; }
+  .total-badge b { font-size: 20px; color: var(--gold); font-variant-numeric: tabular-nums; }
+
+  /* Score sheet */
+  .sheet {
+    background: var(--paper);
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.35);
+    padding: 14px 14px 10px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 18px;
+  }
+  @media (max-width: 640px) {
+    .sheet { grid-template-columns: minmax(0, 1fr); }
+  }
+  table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+  caption {
+    text-align: left; font: 700 13px/1 system-ui, sans-serif; text-transform: uppercase;
+    letter-spacing: 1px; color: var(--muted); padding: 0 0 8px;
+  }
+  th, td { padding: 2px 3px; }
+  thead th { font-size: 12px; color: var(--muted); font-weight: 600; text-align: center; }
+  tbody th { text-align: right; font-weight: 500; white-space: nowrap; padding-right: 8px; }
+  tr.calc th { color: var(--muted); font-weight: 600; font-size: 13px; }
+  tr.calc.first > * { border-top: 1px solid var(--line); padding-top: 6px; }
+  td { width: 23%; }
+  .cell, .calcv {
+    display: flex; align-items: center; justify-content: center;
+    width: 100%; height: 30px; border-radius: 5px; font: inherit; font-weight: 600;
+  }
+  .cell {
+    border: 1px solid var(--line); background: #fff; color: var(--ink); padding: 0;
+  }
+  .cell.open { cursor: default; }
+  .sheet.scoring .cell.open { cursor: var(--pencil); border-color: #b9ad85; }
+  .sheet.scoring .cell.open:hover, .sheet.scoring .cell.open:focus-visible {
+    background: #fffbe0; outline: 2px solid var(--gold); outline-offset: -1px;
+  }
+  .sheet.scoring .cell.open:hover::after, .sheet.scoring .cell.open:focus-visible::after {
+    content: attr(data-preview); color: var(--muted); font-style: italic; font-weight: 500;
+  }
+  .cell.filled { background: var(--paper-alt); border-color: transparent; cursor: default; }
+  .cell.filled.zero { color: var(--muted); }
+  .cell.last { box-shadow: inset 0 0 0 2px var(--accent); }
+  .calcv { background: transparent; color: var(--ink); height: 26px; }
+  .calcv.bonus { color: #1f7a3a; }
+  .grand { font-size: 17px; background: var(--paper-alt); }
+
+  /* Dice tray */
+  .tray {
+    margin-top: 16px;
+    border: 2px solid rgba(255,255,255,.35);
+    border-radius: 12px;
+    padding: 14px 14px 12px;
+    position: relative;
+    background: rgba(0,0,0,.12);
+  }
+  .tray-legend {
+    position: absolute; top: -11px; left: 14px; padding: 0 8px;
+    background: var(--felt); color: #fff; font-weight: 700; font-size: 14px; border-radius: 4px;
+  }
+  .status { text-align: center; color: #fff; min-height: 21px; margin: 2px 0 10px; }
+  .tray-row { display: flex; align-items: center; justify-content: center; gap: 22px; flex-wrap: wrap; }
+  .dice { display: flex; gap: clamp(8px, 2.5vw, 16px); }
+  .die-wrap { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+  .die {
+    --s: clamp(46px, 13vw, 64px);
+    width: var(--s); height: var(--s);
+    border: none; border-radius: 18%;
+    background: linear-gradient(145deg, #ffffff, #e9e6dc);
+    box-shadow: 0 4px 0 #b9b4a3, 0 6px 12px rgba(0,0,0,.35);
+    display: grid; grid-template: repeat(3, 1fr) / repeat(3, 1fr);
+    padding: 16%; cursor: default; transition: transform .12s, box-shadow .12s;
+  }
+  .tray.selecting .die { cursor: pointer; }
+  .tray.selecting .die:hover { transform: translateY(-2px); }
+  .die:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+  .die[aria-pressed="true"] {
+    background: linear-gradient(145deg, #fff4c2, #f2d77a);
+    box-shadow: 0 4px 0 #b8952a, 0 0 0 3px var(--gold), 0 6px 14px rgba(0,0,0,.35);
+    transform: translateY(-4px);
+  }
+  .pip { width: 72%; height: 72%; margin: auto; border-radius: 50%; background: transparent; }
+  .pip.on { background: radial-gradient(circle at 35% 35%, #444, #111); }
+  .die[data-v="1"] .pip.on { background: radial-gradient(circle at 35% 35%, #e24a40, #9c1c14); }
+  .rolling .die:not([aria-pressed="true"]) { animation: shake .09s infinite alternate; }
+  @keyframes shake { from { transform: rotate(-7deg) translateY(-1px); } to { transform: rotate(7deg) translateY(1px); } }
+  @media (prefers-reduced-motion: reduce) {
+    .rolling .die:not([aria-pressed="true"]) { animation: none; }
+  }
+  .hold { height: 16px; font-size: 12px; font-weight: 700; color: var(--gold); letter-spacing: .5px; text-transform: uppercase; }
+  .tray-actions { display: flex; flex-direction: column; gap: 8px; min-width: 120px; }
+
+  button.btn {
+    font: 600 14px/1 system-ui, sans-serif; color: var(--ink);
+    background: var(--btn); border: 1px solid rgba(0,0,0,.25); border-radius: 7px;
+    padding: 10px 16px; cursor: pointer; box-shadow: 0 2px 0 rgba(0,0,0,.25);
+  }
+  button.btn:hover:not(:disabled) { background: var(--btn-hover); }
+  button.btn:active:not(:disabled) { transform: translateY(1px); box-shadow: 0 1px 0 rgba(0,0,0,.25); }
+  button.btn:disabled { opacity: .5; cursor: default; }
+  button.btn:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+  button.primary { background: var(--gold); border-color: #a9821a; font-size: 16px; padding: 12px 18px; }
+  button.primary:hover:not(:disabled) { background: #ffd451; }
+
+  .toolbar { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 16px; }
+  .hint { text-align: center; color: rgba(255,255,255,.7); font-size: 12px; margin-top: 12px; }
+  kbd { font: 11px ui-monospace, monospace; background: rgba(255,255,255,.15); border-radius: 3px; padding: 1px 4px; }
+
+  /* Dialogs */
+  dialog {
+    border: none; border-radius: 12px; padding: 20px 22px; max-width: min(420px, calc(100vw - 32px));
+    width: 100%; background: var(--paper); color: var(--ink); box-shadow: 0 20px 50px rgba(0,0,0,.5);
+  }
+  dialog::backdrop { background: rgba(0,0,0,.45); }
+  dialog h2 { margin: 0 0 12px; font: 700 20px/1.2 Georgia, serif; }
+  dialog .row { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
+  dialog input[type="text"] {
+    width: 100%; font: inherit; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; background: #fff;
+  }
+  dialog label.check { display: flex; gap: 10px; align-items: center; padding: 5px 0; }
+  .hs { width: 100%; font-variant-numeric: tabular-nums; }
+  .hs th, .hs td { padding: 5px 6px; text-align: left; border-bottom: 1px solid var(--line); }
+  .hs td.num, .hs th.num { text-align: right; }
+  .hs tr.me td { background: #fff3c4; font-weight: 700; }
+  .hs .empty { color: var(--muted); }
+
+  .credits { height: 220px; overflow: hidden; position: relative; background: #111; color: #fff; border-radius: 8px; text-align: center; }
+  .credits-inner { position: absolute; left: 0; right: 0; top: 100%; animation: credits 26s linear infinite; padding: 0 10px; }
+  .credits-inner h3 { color: var(--gold); margin: 14px 0 2px; font-size: 14px; }
+  .credits-inner p { margin: 0 0 4px; font-size: 14px; }
+  @keyframes credits { to { transform: translateY(calc(-100% - 220px)); } }
+  @media (prefers-reduced-motion: reduce) {
+    .credits { overflow: auto; }
+    .credits-inner { position: static; animation: none; padding: 10px; }
+  }
+
+  /* Yahtzee splash */
+  .splash {
+    position: fixed; inset: 0; display: none; align-items: center; justify-content: center;
+    background: rgba(0,0,0,.35); z-index: 10; cursor: pointer;
+  }
+  .splash.show { display: flex; }
+  .splash div {
+    font: 900 clamp(48px, 14vw, 120px)/1 Georgia, serif; color: var(--gold);
+    text-shadow: 0 4px 0 #8a6a0a, 0 10px 30px rgba(0,0,0,.6);
+    animation: pop .5s cubic-bezier(.2,1.6,.4,1);
+    text-align: center;
+  }
+  .splash small { display: block; font: 600 18px/1.4 system-ui, sans-serif; color: #fff; text-shadow: none; margin-top: 10px; }
+  @keyframes pop { from { transform: scale(.3) rotate(-8deg); opacity: 0; } }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>Triple <span>Yahtzee</span></h1>
+    <div class="total-badge">Game Total <b id="badgeTotal">0</b></div>
+  </header>
+
+  <section class="sheet" id="sheet" aria-label="Score sheet">
+    <table id="upper">
+      <caption>Upper Section</caption>
+      <thead><tr><th></th><th>×1</th><th>×2</th><th>×3</th></tr></thead>
+      <tbody></tbody>
+    </table>
+    <table id="lower">
+      <caption>Lower Section</caption>
+      <thead><tr><th></th><th>×1</th><th>×2</th><th>×3</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <section class="tray" id="tray" aria-label="Dice">
+    <div class="tray-legend" id="frame">Dice</div>
+    <div class="status" id="status" aria-live="polite"></div>
+    <div class="tray-row">
+      <div class="dice" id="dice"></div>
+      <div class="tray-actions">
+        <button class="btn primary" id="rollBtn">Roll Dice</button>
+        <button class="btn" id="undoBtn" disabled>Undo</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="toolbar">
+    <button class="btn" id="hsBtn">High Scores</button>
+    <button class="btn" id="resetBtn">Reset Game</button>
+    <button class="btn" id="settingsBtn">Settings…</button>
+    <button class="btn" id="aboutBtn">About…</button>
+  </div>
+  <div class="hint"><kbd>R</kbd> roll · <kbd>1</kbd>–<kbd>5</kbd> hold dice · <kbd>U</kbd> undo · click a score box to score</div>
+</div>
+
+<div class="splash" id="splash"><div>Yahtzee!<small id="splashSub"></small></div></div>
+
+<dialog id="nameDlg">
+  <form method="dialog">
+    <h2>New High Score!</h2>
+    <p>Score: <b id="nameScore"></b></p>
+    <label>Name<br><input type="text" id="nameInput" maxlength="30" autocomplete="nickname"></label>
+    <div class="row">
+      <button class="btn" value="cancel">Cancel</button>
+      <button class="btn primary" value="ok">OK</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="hsDlg">
+  <form method="dialog">
+    <h2>High Scores</h2>
+    <table class="hs"><thead><tr><th>#</th><th>Name</th><th>Date</th><th class="num">Score</th></tr></thead><tbody id="hsBody"></tbody></table>
+    <div class="row">
+      <button class="btn" value="clear" id="hsClear">Clear</button>
+      <button class="btn primary" value="ok">OK</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="settingsDlg">
+  <form method="dialog">
+    <h2>Settings</h2>
+    <label class="check"><input type="checkbox" data-setting="dice"> Dice roll sound</label>
+    <label class="check"><input type="checkbox" data-setting="score"> Scoring sound</label>
+    <label class="check"><input type="checkbox" data-setting="yahtzee"> Yahtzee fanfare</label>
+    <label class="check"><input type="checkbox" data-setting="hiscore"> High score fanfare</label>
+    <div class="row"><button class="btn primary" value="ok">OK</button></div>
+  </form>
+</dialog>
+
+<dialog id="confirmDlg">
+  <form method="dialog">
+    <h2>Triple Yahtzee</h2>
+    <p id="confirmText"></p>
+    <div class="row">
+      <button class="btn" value="no">No</button>
+      <button class="btn primary" value="yes">Yes</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="aboutDlg">
+  <form method="dialog">
+    <h2>David's Triple Yahtzee</h2>
+    <div class="credits"><div class="credits-inner">
+      <p>Version 2.00 (web edition)</p>
+      <p>Copyright © 2004</p>
+      <p>All Rights Reserved</p>
+      <h3>New 2.00 Features</h3>
+      <p>100 bonus points for hitting additional yahtzees</p>
+      <p>Updated Pencil Cursor</p>
+      <p>Fixed "Undo" bug</p>
+      <p>Added running totals</p>
+      <h3>Project Lead</h3><p>David Henkemeyer</p>
+      <h3>Technical Lead</h3><p>David Henkemeyer</p>
+      <h3>Engineering Lead</h3><p>David Henkemeyer</p>
+      <h3>Quality Assurance Lead</h3><p>David Henkemeyer</p>
+      <h3>Engineering</h3><p>David Henkemeyer</p>
+      <h3>Conceptual Design</h3><p>David Henkemeyer</p>
+      <h3>Artwork</h3><p>David Henkemeyer</p>
+      <h3>Sound Editor</h3><p>Karen Henkemeyer</p>
+      <h3>Version 2.00 Assistant</h3><p>Gabriel Henkemeyer</p>
+      <h3>Tail Wagging Support</h3><p>Bella</p>
+    </div></div>
+    <div class="row"><button class="btn primary" value="ok">OK</button></div>
+  </form>
+</dialog>
+
+<script>
+(() => {
+  "use strict";
+
+  // ---- Rules -------------------------------------------------------------
+  const UPPER = [
+    { id: "1", label: "Ones", n: 1 }, { id: "2", label: "Twos", n: 2 }, { id: "3", label: "Threes", n: 3 },
+    { id: "4", label: "Fours", n: 4 }, { id: "5", label: "Fives", n: 5 }, { id: "6", label: "Sixes", n: 6 },
+  ];
+  const LOWER = [
+    { id: "k3", label: "3 of a Kind" }, { id: "k4", label: "4 of a Kind" }, { id: "fh", label: "Full House" },
+    { id: "ss", label: "Small Straight" }, { id: "ls", label: "Large Straight" },
+    { id: "yz", label: "Yahtzee!" }, { id: "ch", label: "Chance" },
+  ];
+  const MULT = [1, 2, 3];
+  const TOTAL_BOXES = (UPPER.length + LOWER.length) * MULT.length;
+
+  const counts = d => { const c = [0, 0, 0, 0, 0, 0, 0]; d.forEach(v => c[v]++); return c; };
+  const sum = d => d.reduce((a, b) => a + b, 0);
+  const isYahtzee = d => counts(d).includes(5);
+  const has = (d, ...vals) => vals.every(v => d.includes(v));
+
+  // Same scoring as the original: from the 4th Yahtzee rolled in a game on,
+  // a Yahtzee earns +100 in whatever box it is scored.
+  function scoreFor(cat, d, numYahtzees) {
+    const c = counts(d);
+    const bonus = isYahtzee(d) && numYahtzees > 3 ? 100 : 0;
+    const max = Math.max(...c);
+    switch (cat) {
+      case "k3": return max >= 3 ? sum(d) + bonus : 0;
+      case "k4": return max >= 4 ? sum(d) + bonus : 0;
+      case "fh": return ((c.includes(3) && c.includes(2)) || max === 5 ? 25 : 0) + bonus;
+      case "ss": return has(d, 1, 2, 3, 4) || has(d, 2, 3, 4, 5) || has(d, 3, 4, 5, 6) ? 30 : 0;
+      case "ls": return has(d, 1, 2, 3, 4, 5) || has(d, 2, 3, 4, 5, 6) ? 40 : 0;
+      case "yz": return (max === 5 ? 50 : 0) + bonus;
+      case "ch": return sum(d) + bonus;
+      default: {
+        const n = Number(cat);
+        return c[n] * n + (d[0] === n ? bonus : 0);
+      }
+    }
+  }
+
+  // ---- Persistence (best effort) ------------------------------------------
+  const store = {
+    get(key, fallback) {
+      try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch { return fallback; }
+    },
+    set(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* ignore */ } },
+  };
+  const HS_KEY = "tripleYahtzee.highScores";
+  const SET_KEY = "tripleYahtzee.settings";
+  const emptyScores = () => Array.from({ length: 10 }, () => ({ name: "Empty", date: "", score: 0 }));
+  let highScores = store.get(HS_KEY, null);
+  if (!Array.isArray(highScores) || highScores.length !== 10) highScores = emptyScores();
+  const settings = Object.assign({ dice: true, score: true, yahtzee: true, hiscore: true }, store.get(SET_KEY, {}));
+
+  // ---- Sound -------------------------------------------------------------
+  const DICE_WAV = "data:audio/wav;base64,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bHd3eHVubW9zd3l8fHyKjH5vX1pcWV5eXl1caHR+fn+HmJikpKaglYuIg4SGhoCEhIeEgHlzdXV4dXBxcXh+ioh+fnZwdHh4bWVpb3Jyc3FzcXNzeXl4eHiEjIuAgIaGhISEhIWMkJaUiX9/eHhybGxwdHRxcHB0dHNtaG11gIB2cHBwZGNsbGtve4B6em9vdoB8eHR4gIeHjIyMkJSTioeIiIiEf398eHh6fHp3d29wcnJ4eXh0dXV3dHJwc3N8gIOIiIaEf3p1dXV5fYCAhIaIiYmJiYiHi4uJhoB4cGxxcXNze314dXZ3fHh0dHR3eHp8fHx4cHB2dnZ7e3h7e4B9fH19fYCDgX18e32AgHp1dXN0eH5+fHp6dHd1dXR4eHyAhISFh4aAgISMsuXl5UAaKhpWVoKQmJiIf4uXjZKSn6Ojo5F8cG9zgISEjpiYlIFrZmNaXGFhZGRrcHaMoJ2cmJSUlJinoIx6ZVpfampqdHZ4d3Zxb3Z9fYiIi4F9fIB9eXd3fICAgYCAgHp0dHN1dHBwcG9vbGtrb3RzdHR4gIOAgICCg398dXV3fHx9fXp7fnx/gICEiIyMnaGplnhaTU1OTlVla3iAgICIiJKSko+JiIyOkZaWlpaQjIN+fnd0b2lpaWlvcnBucHV7f3+BgoKCgoKAfHuCgoyJiYWAfXx4c3d3eH+Dg4aMjJCMioqEg4OCgoSEgX9/fXp0dHVzc3OAlJSUfF1ISVxcbHyFhYmEfXZzeYSEiZGRkH50b3R7f319fXx8fH+AfX+Eho2NjY+DeXBtcniBjIyMj4uEe3R1cnJ5eYCAgYSDhoaIh4eGi5GRlIyDdWtkZGNjaXJyeXh1dnt7goaLkJCUlZWUj4+Ig4B8enp6gIeHi4FzZ19haWlwe3uAg4WGh42Mi4uIiISBf3x7eXd1dXh4eHh7gIWIgHt7e3t7fX1+gYKEhYODgIB8e3t8fXh4d3d0dXV6foOAe3hzc3R0dHZ0dnh6fHyBiIyMjIqJiYqKiouOkIuMjImFgHh4dHJwcHN7e36AgoKEiJCcv7iAgFJSPklXYGhwdnl5gICEhYqNi4iGhoyMjJSem42EfXt1dG9vb3Bxbm9zeX5+fnt+foeNko+IhoCAgH19f4CBf3p2dXV3dXd3f4iIgXx4eHZwbnV1fYSCf3l5dXR1e4CAgYOFhYiMjoqHhoaGhH9/fXh0bmtsdHR4fn6Ag4eLjYyMioqLi4yNi4iGgoKEgICAeXZybnJwb3B2dnZ8foCFhYeKiYqKiIiCgHx4eHh8hISJjIyIhpSTel9fTEtceHiNnqehlpaGenV0dHt/gH9+fn9+goSEhH51cnNzdHN0dHh5eXyAgH9+f31+gIOFhYiIioeDf318fX5+fX18fH5/f4CAgICAgH6AgoKDhISEgoKAgHt7fH+BgIGBgYCAgICBgoOEhoSEgH5+fHx6eHV4fHx/gIODgH6Ag4KCgH+ChYaGhYF9fHx8gICCgoODgYCAgIGEhIF+eHh6foKCgoB/fnx8fHx+fn18fHx+f4CEi4uLiYR9eHZ4fH1/fX19fH18fXx8fX2AgICEiImJhYB7eXl8f3+AgH18fHx8fHx9e3t6fH2AgoODgHx4dXV4fICBgYF/fYCDg4SEiIqKjIiGg4F/f4CEgYGBgIB+fHx4eHl8fIGCfnl1cnR4eHx8f4KDhIiLiIJ8fHx3eHt+goWGiIaGhoaEhouMk6GdiYl0dHJ1bmNVUFhycoSJiYiQmJmRjI2Nj5CNjYiCfXx4eHd0cGtraGllX11dYml0gIaGjJCPj4+NjI2MioeHgoB/f318e3h0bm1tcHB1fIOHiomMj4+OjouIhYSDgoGAeXl5d3V1dnV4fH+BgoKCgoSGiIeEgH5+f319eXh4eXx+fn58fHyAgH17e3qAgISDiIiKiYmHiIiIh4iIhoaCgH18fH1/gIOAfHx6fHx8fHt6eXx8fHx6e3t/gIKEhIOCgoOEhISCgoOAgYSEhISEf3h1cnR0dn6Hh4ecoZqNeGdeXmZmZnOHjHxpY2hzhISQkJWYmpqUkpKSkIuHh4SAfHh1cnJubGxtbXJ4fX17e3p7e319gYSEiIiIiIWDgHt7eHh4eHl7fHx7e3x8foODiIyMiYWAfX5+gICBg4SIiIaFhISCgoKDhIWFhIGAfn5+enZ2eHh4eHh3d3p6enl4eXt9f4CAgIGBgoGBgoWFhYWEhISDgICAgIKCgoGCgICAgH+AgIB+fHt6eHh5enx+foGCgoSEhYWEhIWFhIKAgIB+foCAgIB/gICAgICAgICAgICCg4SEhIKBgYGCgH99e3l8fHx9fX18fHx8fHt9foCAfn5+fHp7ent7e3x/f4CAgIGCg4SEh4iJiYiHhIKAgIB/fH18fHx8fHp6enp5enx6enx+gIB/fXt3dXNzdXV5eX6AgYSGiIiIioqKjI2NjIuIhICAfn59fHx+foB/gICAgIKDhYSEgIB+fX19fn18fHx9kaikpIiIYEpCSVhhcISEmJ6en6CdmZWWlpSMiIiIhYF9eHV1cXJ2cXFsaGhrcnJ4f4GEh4eJi4yNjYuIhIOFgoJ/e3t3cG1qa292fn6CgoSGiImLi4uIiImJiIaEg4J+fHx6enp6enl5eXp7fH5+gICAgICBgoCAf398fHx6enp8fH1+fn58fHx6enx9gIWFiIqLi4yLiIiEhIOCgYCAgH19e3h4dXR0dXh6enx+f39/gICEhoWFhYaIiIiGg4B+fHt7eXl8gIKBg4GDgoSEhIWIiIeIh4aHhoSEhIB9e3h3dnh4d3d3eHh6e3x8foCAgICAgYGAgIGCgIB+fHh4eHp7fX+AgIOEhYWFhYWFhYaGhoSEhISEg4B/f3p3dXR0dHR3eXx8ipKLfGpiYGBocXF6gYiPjYuMi4uJiYmLi5Cdm4x3d2dnX2NweICGiYiFhYWGhoiJiYiFhISEg4OAgH13dnV2dHRzc3Nyc3d+g4eIiIiIk5OUjYB1cHBvdHp8fICDg4CAgIKEhoiLi4qJiYuLjIycm4htbVNGS0tcZHOAwtmQkFRUKB87aXaos6ystLSwra6YhYaKgX9/f3x0cHyHem9eVE9PT0pWY2p4ipSZmZSPj46NkI+KioiIiImJiImFe2xgXFxgbHt7nNfAgEtAQElZbIiIoJ6msLC0q5SAeYODhISBgX96dHNzbW1oaHNzc25samx0eXl4e3t9gIGChYSFhYWFhYqLioyMiYSDhYWFio+PioR8ent/f399fHx8d3V0eHl5eXl8fICAg4OCgoSGg4OBg4WEf3t7eXt7fHx4dXh4enp6e3yAgISKiYmMjIuMjJGTk46Efn51cm1vdnx8fH2AgIGAgH16dnh7e3x8fXx8f358fHh4eHh+fn58foaHhIeHh4eIiIiIiImFgYF/f359fn99eXl7e3x8fICCg357eHV1dnR0eICAgICEhIeGhISEhIaEhIKCgICAgICAf3x9fX2AgICBg4WFhIKCgoCAgYKChISCgH9/gIKDgYB9fHx8fH18fYCAgYB/fHx8e3x8eXt8eHd3eHh4eXyAgoGDgoKCgoKEhISEg4OEhISCgICAgICAfX5/f3+AgICBhIWEhoODgIB9fX19gIGBgICBgIGDgYGBfHt7e3t5eX1/f317fHx5e3yAf39+fn18fH2Agpehm4h0dGRkXVxeaG56iJWfn5+gnJiXlpSTkouLi4Z/eHBnYmRmZmZpaWtvc3h6fYCCgoWIiIuMi4mHhYWBgH58fHp3d3V2dnp8gYeHiIqKh4SEhISDg4ODhISFhYWFhIKEg4ODgYCAgICCgICAgICAgIB9fXt4d3RycnJ0dHZ5fH1+gIKEh4eHiIiIh4aFhYSDg4KChISCgYB/fn5+gIKCgoF/fHx8e3t4d3d4e32AgoGBgYGAgICAgH58gICAf317fHx8f399fXx7fH2AgICChIaGh4WDgH57e3p4eXl8fYCAgIODg4KCg4OCgYCBgIB+fn59fHt5eHh4eHl7e3t8fH6AhIWEhIKCgoGAgIGBgoKDg4WGhoaEgoGCgIGBgYCAgICAf35+f398fHt8fH1+f359fXp7fHx8fn+Bg4ODhIOAfn19fHx9fX5/gICAgICAf4CAgICAgoSCgoODgIB/f3+AgICAhISEhIWGgX14c3N2eHh4eX2Ag4aEgH57e3x8foOEhYWGhoeHjoyMhn1yaGVlcHB6gICEh4uNjouLh4SChISIjouBd3dyb3ByeHh6fH6AgIKAgYjM5eWTNBoaHkBgh5aHgoKsrMfKs4Z4ip+np5mZipy0t5RNHBoaGhoxQlhcbJjAw6mPj4+HkqCmnJWWlZWRhIR0ZWRfVVJZWWRxcXqAgICIlJyclouHh4mIgYB+fn59e3h0dHJ1fYSEiIqKjIyLi4iEgIB+e3l4d3R0cnJ0dHd4e32ChoaGhoiIi4yIhIGAfnx8fH6AgH57d3d4eXt7e3t8f316dXR4fHx8f318e3yChIqQkIuLhYSKkIiBgICBg4CAfnl4e358fHh0dXl5gIiJh4WFiIqKiIiHhISCgIB7dnl8e3t4dHd3fHx9f4CEhISDgYGAf4GBgYCAfn5/f4CBgYCAgYGAgIGBgoGDhIWEg4B/f3+AgICAe3p5enx8enp4eXt8fH1/gICAgICEhISEgoKEhIGAgICAgH98fH19fn9/f358enx/f39/gICAgIB/gICAgIKBgICAgICAgIB/gH5+foCAfn+AgICBhISFh4SEgYGCgoKDgX98eXh4eHh8f4CAgIGBgYODg4SGhISDgH99fn5+fX5+gIGAhISEgYGBgoCAgYCAfX1+f319foCEgoGAgIB/gH5+f3+Af39/gICBgYGAfn17e3x8gIB+fX19fX19f3+AgICBgYGAfn6AgYF/gICAgICAgIGBgH59fXt4eHh4fHt8fX59fnx7e3t8fHx8fX19fn5+gIB/gH9/gIGDgoKCg4OEgoB/fX19fH5+fn5/gIKEhISEgYKFhYaSmIh2dmpkZGl0dHmAiJGRm5yVjIaEhIWGhoSEgoB/fHh0dHNzcnR5fHp0cnBwb29zeYCFiIqNj42NjYuHhIKCg4GAf39/f39/f319gICBgYB9fXp2dHZ5foCAgYSEhIWEhIKBgICAgYKCgYCAgH9/f399e3d3dnZ2dnZ5e32AgoSEhYWFhYSDg4SFhISDgH5+fXt8fH2AgYGBgYKBgIKAgIB8fHx8enl6e3+AgYGAgYGBgYCAgIKDgoKBgYGAgYCAf4CAgICAgIB9fX2AgYCAgH58e3t7fH+AgYSEhYiIiIiGipSkkJB4gHpaWi8qLkx0dICNnamvr7S3trajkJSgoJiQkIN8fHRlXFNSVVlgYGNjY2h3f4eGiIyMjY2OjIiGhYOCfHd3d3Z5enh6gI/FycmmpnBHPEhXVlxwcI+srMPMtJeLi42Ni5CQlJWTj4R0dGhhYFtbW1xZXWBgZGxxfIKChYiHiIiIiIqMiIWFiIiAgHl5fYKGioqMiYmKiIeGhYWCgYGAgHx6eXh1dHV4fHx8f4GEhYeIioqFg4ODhIOAfHp5eXh4d3R0dHR0dHZ7fX2BhYWGiYeEhISGhoeHiIiIiYmGg4CAgYB+eXl6fHl3d3V0dHV4d3d4enx8fH2AgoOCgoSHh4eGhYWHh4eHh4SDg4SCgYB/gICBgYGEgIB8fHx9fnx8fHx8fHx6fICEkaurq5Z0UElUaGpjcHCEhJekqpyIgIODiIiHh4mNkIuFfX13dnh4eHV0dHd6enp5fYKChoiGhIKCg4SEgoCAfHx8fHp2dHZ4fH5+gISEnK2XbVJQWG5udHRweIecrLGch4eAgIiPkI2MjYyHgICAdm5vcHFvcG1ubnFxc3F0e4CEh4iIio6OjoqCenR3e3t8eXl5gIuSk5CLi4aGhoaHhYSAfn54dHJ0d3d5eXp9fX2AhISBgYGBhISEgH18fn99fXt4eHh4eHd1dXV4eH19gYSDg4GCg4GAgICAg4SGhIWHiIeDg4OBgoSEgH9/fHp6enh3dHh6foWKioiBgXhwb3J5iJCQiH94eHiAnJSBcnJxe4iUlIuAfoSRkZWVjISEgICEhYV0fIBqRDQ0NFZpaXB2haWwtLS0rJ2dlpKWk4+Lh4GBdXVqXltcZmttbW1tbXR8hYqKio2QkJCQkYyIh4WBfXd3d3d3dXRydHt+f4CAgICAgoKBgH+AgH59fHp6fH19e3x8foCChISHhoiGhoaEhYODg4ODgH+FhaGRa1FQXFxraWlibIGTnaSZhIR8fISNjIiIi4uGhoKCfHRzdHV0cXNzc3N3eHd5foWKiYmJiIiIiIiKi4iFiIiGf395eHyAgICAgH9+foCBgYCAgIKCgYB8fHx7e36Hh4uFfHRycnR4d3p6f4SJjpGQkIaEhISEgYB9e3h4dHRxcXR4e39/gYCAgYKCgoKDhIeFhICAgICAgIKBgICAgHx8fHl5e32Af4B+fHx8enp5enp4eHx/f3x8enyAg4ODgoKEhoeHhISCgYOCgoB/f39/f4CAgYSEgYCAgYGHh4SAfHx6eHh6e3t8foKChoaEgoB/f3+AgYGCg4KAfnx8enp8fHp7fH6AgYGCgoODg4SEhIaHhYSDg4ODgICBf31/fX19fX19fICAf4CAgIB+fHx8fHx8fHyAgIB/f358fX1/gIB+gISEhIWGkbKzs4lkSEBHR05JW3l5i5qor6eYmJKUmpqZnJ+el4yMfnBwZ2JhYGBgYGNjaGhscXV8gICBhIWFhYiLioqFh4iGgH19fXl8foCAg4SGhoaGiImIiYuJiIWFg4CAf3p2d3h5enp8gIKCg4SGhoOEhIODg4KCgICAfX17d3V0dHR0dXZ6enp8foCBgICBgoSEg4OFhYaEhISCgICAgIB/gIB9fHx8fHp7fH19f399gICAg4SCgICAgYB/f39+f317fH58f4GBgYF/gIB/gIKCgoSEgYGAfoB/gIGBgoCAgICAhISEgoKCg4B+fnx8e3l4eHh4eX6Li4mAdXBwcXV2d3yFhZCUlJiYj4mHhYOCgoSEg4CAf3t4dnZ2d3d4eHh4eXl6e3x8fH6AgICAgICAfn58fH6AhISDgoB9fXx8fHt8gIOEiImJhoSEgHt6eXx8fn6Ag4aGiIiIiIeHhYOBgH9/fHp5e3t7enh4eXp6fH19fXx9fX+AgICAgYKCgYCAgICAgICAgICBgYCBgYGDgoKCgYOBgIB/fn5/f39/gH9/f31+fn9+fn5+f319fn1+f3+AgICAgICAgYCAgIGAgYGCgoODgYCAgH+AgICAfn9+fHx9fn+AgH99gIGBf358fHt7e3t8fHx9gIKEhoSFhYOBgYCAgIGAf35+fn9/fn18fHx9f4CAgIGCg4ODg4KEhISEhISEgoGAgICAfn5/f359fXx+fn19fX18fH5+f4CAgICBgYGBgYB/gIB/f4CAgIGBgYGAgICAgIB/f4CAf4CAgIB+fX5+fn9/fnx8fHx9fn59f3x8fHx8fH5/gICBgICAgICAgH99fHx9fHx8gIGEhIF+eHh6en6CgoB/fnx8fHx8fn18fHx+f4CEi4uLiYR9eHZ4fH1/f319fH18fXx8fX19gICEiImJhYB7e3l8f3+AgH18fHx8fHx9e3t6fH2AgoKDgHx4dXV4fICBgYF/fYCDg4SEiIiKjIiGg4F/f4CEhIGBgIB+fHx4eHl5fIGCfnl1cnR4eHh8f4KDhIiLiIKCfHx3eHt+goWGiIiGhoaEhouMk6GdnYl0dHJ1bmNVUFhYcoSJiYiQmJmRkYyNj5CNjYiCfXx8eHd0cGtraGllX19dYml0gIaGjJCPj4+NjI2MioeHgoKAf318e3h0bm1tbXB1fIOHiomMj4+PjouIhYSDgoGAeXl5d3V1dnV4fH9/gYKCgoSGiIeEgIB+f319eXh4eXx+fn58fHyAgH17e3p6gISDiIiKiYmHh4iIh4iIhoaCgH19fH1/gIOAfHx6fHx8fHt6eXx8fHx6ent/gIKEhIOCgoKDhISCgoOAgYSEhISEf3h1cnR0dn5+h4ecoZqNeGdeXl5mZnOHjHxpY2hoc4SQkJWYmpqUkpKSkIuHh4SAfHh1dXJubGxtbXJ4fX19e3p7e319gYSEhIiIiIWDgHt7eHh4eHl7fHx7e3x8fn6DiIyMiYWAfX5+foCBg4SIiIaFhISEgoKDhIWFhIGAgH5+enZ2eHh4eHh4d3p6enl4eXt9f3+AgIGBgoGBgoWFhYWEhISDgICAgICCgoGCgICAgH+AgIB+fHt6eHh5enx8foGCgoSEhYWEhISFhIKAgIB+foCAgIB/gICAgICAgICAgICCg4SEhIKBgYGCgH99e3l8fHx8fX18fHx8fHt9fX6Afn5+fHp7ent7e3x/f4CAgIGCg4OEh4iJiYiHhIKAgIB/fH18fHx8fHx6enp5enx6enx+foB/fXt3dXNzdXV1eX6AgYSGiIiIioqKjI2NjIuIhICAgH59fHx+foB/gICAgIKDhYSEgIB+fn19fn18fHx9kaiopIiIYEpCSVhhYXCEmJ6en6CdmZWVlpSMiIiIhYF9eHh1cXJ2cXFsaGhra3J4f4GEh4eFhoaHhoeHhIODgYKAgIKAgYB8eXt7fH5+gIKFiIiFhISEhYWDgIB/f358enp6eHZ0dHZ4e32BgYGEhIOEgoKEhIGAgICAgICAfX5/f4CAgICAhISEhYKAgIB9fX19gICAgICAgICCgICAfHt7e3t5eX1/f317fHl7e3yAf39+fn18fYCAgZSdmIZ1dWdhYWBhanB6h5Kbm5ycmJSUk5GQkImJhYV/eHFpZWdpaWxsbG1wdHh7fYCBhISHh4mKiYiFhICAgH58fHt4eHZ3e3x8gIWFh4iIhYSDhISCgoKCg4OEhISEg4GDgoKCgICAgICBgICAgICAgH19fXx5eHV0dHR1eHp6fH1+gIGEhYWHh4aGhYSEhIOCgYGBg4SBgIB/fn6AgYGBgYB/fHx8fAA=";
+  const CLICK_WAV = "data:audio/wav;base64,UklGRqQAAABXQVZFZm10IBAAAAABAAEAESsAABErAAABAAgAZGF0YYAAAAB/gH19gmmxi56FTaVdkk5tyVROfqdiOb+uAJDAUneCjZSEVpO2R2GEzVtaq49we4KdYY6Ld3iLfX2LcYSZemGSl3Fyi5GIhWl/jJN3gIWAgIuJeHuKg4aCiIN7eYmJiHZxiY2EeXuAhH+EiXd6h4F1eoN/fX6Gf4GAgICAgICAgA==";
+  function play(src) {
+    try { const a = new Audio(src); a.play().catch(() => {}); } catch { /* ignore */ }
+  }
+  let audioCtx = null;
+  function fanfare(notes) {
+    try {
+      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      let t = audioCtx.currentTime + 0.02;
+      for (const [freq, len] of notes) {
+        const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+        o.type = "triangle"; o.frequency.value = freq;
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.exponentialRampToValueAtTime(0.25, t + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + len);
+        o.connect(g).connect(audioCtx.destination);
+        o.start(t); o.stop(t + len + 0.02);
+        t += len * 0.85;
+      }
+    } catch { /* ignore */ }
+  }
+  const YAHTZEE_TUNE = [[523, .14], [659, .14], [784, .14], [1047, .32], [784, .14], [1047, .5]];
+  const HISCORE_TUNE = [[392, .16], [523, .16], [659, .16], [784, .16], [659, .16], [784, .5]];
+
+  // ---- State -------------------------------------------------------------
+  const S = {
+    dice: [6, 6, 6, 6, 6],
+    held: [false, false, false, false, false],
+    roll: 0,            // roll number within the turn (0 = turn not started)
+    rolling: false,
+    selecting: false,   // may toggle holds
+    scoring: false,     // may click a score box
+    canRoll: true,
+    numYahtzees: 0,
+    scores: {},         // "cat:col" -> value
+    frame: "Dice",
+    status: 'Press "Roll" to roll the dice.',
+    undo: null,
+    lastKey: null,
+    gameOver: false,
+  };
+
+  // ---- DOM ---------------------------------------------------------------
+  const $ = id => document.getElementById(id);
+  const sheet = $("sheet"), tray = $("tray"), diceEl = $("dice");
+  const rollBtn = $("rollBtn"), undoBtn = $("undoBtn");
+  const cellEls = {};
+  const calcEls = {};
+
+  function buildSheet() {
+    const mk = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+    const addRows = (tbody, cats) => {
+      for (const cat of cats) {
+        const tr = mk("tr");
+        tr.append(mk("th", null, cat.label));
+        MULT.forEach((m, col) => {
+          const td = mk("td");
+          const b = mk("button", "cell");
+          b.type = "button";
+          b.setAttribute("aria-label", `${cat.label}, column ×${m}`);
+          b.addEventListener("click", () => scoreBox(cat.id, col));
+          cellEls[`${cat.id}:${col}`] = b;
+          td.append(b); tr.append(td);
+        });
+        tbody.append(tr);
+      }
+    };
+    const addCalc = (tbody, key, label, first, span) => {
+      const tr = mk("tr", "calc" + (first ? " first" : ""));
+      tr.append(mk("th", null, label));
+      if (span) {
+        const td = mk("td"); td.colSpan = 3;
+        const v = mk("div", "calcv grand"); calcEls[key] = v; td.append(v); tr.append(td);
+      } else {
+        MULT.forEach((_, col) => {
+          const td = mk("td"); const v = mk("div", "calcv");
+          calcEls[`${key}:${col}`] = v; td.append(v); tr.append(td);
+        });
+      }
+      tbody.append(tr);
+    };
+    const up = $("upper").tBodies[0], lo = $("lower").tBodies[0];
+    addRows(up, UPPER);
+    addCalc(up, "total", "Total", true);
+    addCalc(up, "bonus", "Bonus");
+    addCalc(up, "sec1", "Section Total");
+    addRows(lo, LOWER);
+    addCalc(lo, "sec2", "Section Total", true);
+    addCalc(lo, "game", "Game Total", false, true);
+  }
+
+  const PIPS = { 1: [4], 2: [0, 8], 3: [0, 4, 8], 4: [0, 2, 6, 8], 5: [0, 2, 4, 6, 8], 6: [0, 2, 3, 5, 6, 8] };
+  const dieBtns = [], holdLabels = [];
+  function buildDice() {
+    for (let i = 0; i < 5; i++) {
+      const wrap = document.createElement("div"); wrap.className = "die-wrap";
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "die";
+      for (let p = 0; p < 9; p++) { const s = document.createElement("span"); s.className = "pip"; b.append(s); }
+      b.addEventListener("click", () => toggleHold(i));
+      const h = document.createElement("div"); h.className = "hold";
+      wrap.append(b, h); diceEl.append(wrap);
+      dieBtns.push(b); holdLabels.push(h);
+    }
+  }
+
+  // ---- Totals ------------------------------------------------------------
+  const val = (cat, col) => S.scores[`${cat}:${col}`] ?? 0;
+  const filledIn = (cats, col) => cats.some(c => `${c.id}:${col}` in S.scores);
+  function totals() {
+    const t = { cols: [] , game: 0 };
+    MULT.forEach((m, col) => {
+      const raw = UPPER.reduce((a, c) => a + val(c.id, col), 0);
+      const bonus = raw >= 63 ? 35 : 0;
+      const sec1 = (raw + bonus) * m;
+      const sec2 = LOWER.reduce((a, c) => a + val(c.id, col), 0) * m;
+      t.cols.push({ raw, bonus, sec1, sec2 });
+      t.game += sec1 + sec2;
+    });
+    return t;
+  }
+
+  // ---- Render ------------------------------------------------------------
+  function render() {
+    // dice
+    S.dice.forEach((v, i) => {
+      const b = dieBtns[i];
+      b.dataset.v = v;
+      b.querySelectorAll(".pip").forEach((p, k) => p.classList.toggle("on", PIPS[v].includes(k)));
+      b.setAttribute("aria-pressed", S.held[i] ? "true" : "false");
+      b.setAttribute("aria-label", `Die ${i + 1}: ${v}${S.held[i] ? ", held" : ""}`);
+      holdLabels[i].textContent = S.held[i] ? "Hold" : "";
+    });
+    tray.classList.toggle("selecting", S.selecting);
+    tray.classList.toggle("rolling", S.rolling);
+    $("frame").textContent = S.frame;
+    $("status").textContent = S.status;
+    rollBtn.disabled = !S.canRoll || S.rolling;
+    rollBtn.textContent = S.gameOver ? "New Game" : "Roll Dice";
+    undoBtn.disabled = !S.undo;
+
+    // score boxes
+    sheet.classList.toggle("scoring", S.scoring);
+    for (const [key, b] of Object.entries(cellEls)) {
+      const filled = key in S.scores;
+      b.classList.toggle("filled", filled);
+      b.classList.toggle("open", !filled);
+      b.classList.toggle("zero", filled && S.scores[key] === 0);
+      b.classList.toggle("last", key === S.lastKey && !!S.undo);
+      b.textContent = filled ? S.scores[key] : "";
+      if (!filled && S.scoring) b.dataset.preview = scoreFor(key.split(":")[0], S.dice, S.numYahtzees);
+      else delete b.dataset.preview;
+      b.tabIndex = !filled && S.scoring ? 0 : -1;
+    }
+
+    // totals
+    const t = totals();
+    MULT.forEach((_, col) => {
+      const c = t.cols[col];
+      const up = filledIn(UPPER, col), lo = filledIn(LOWER, col);
+      calcEls[`total:${col}`].textContent = up ? c.raw : "";
+      calcEls[`bonus:${col}`].textContent = up ? c.bonus : "";
+      calcEls[`bonus:${col}`].classList.toggle("bonus", c.bonus > 0);
+      calcEls[`sec1:${col}`].textContent = up ? c.sec1 : "";
+      calcEls[`sec2:${col}`].textContent = lo ? c.sec2 : "";
+    });
+    const any = Object.keys(S.scores).length > 0;
+    calcEls.game.textContent = any ? t.game : "";
+    $("badgeTotal").textContent = t.game;
+  }
+
+  // ---- Game actions ------------------------------------------------------
+  const rand6 = () => Math.floor(Math.random() * 6) + 1;
+  const randOther = prev => { let v; do { v = rand6(); } while (v === prev); return v; };
+
+  function roll() {
+    if (S.rolling || !S.canRoll) return;
+    if (S.gameOver) newGame();
+    if (settings.dice) play(DICE_WAV);
+    if (S.roll === 0) S.held = [false, false, false, false, false];
+    S.undo = null;
+    S.status = "";
+    S.selecting = false;
+    S.scoring = false;
+    S.roll++;
+    S.rolling = true;
+    render();
+
+    const tick = setInterval(() => {
+      S.dice = S.dice.map((v, i) => S.held[i] ? v : randOther(v));
+      render();
+    }, 30);
+
+    setTimeout(() => {
+      clearInterval(tick);
+      S.dice = S.dice.map((v, i) => S.held[i] ? v : rand6());
+      S.rolling = false;
+      S.scoring = true;
+      S.selecting = true;
+      S.frame = `Roll ${S.roll}`;
+      S.status = "Click on the dice you wish to hold.";
+      if (S.roll === 3) {
+        S.canRoll = false;
+        S.selecting = false;
+        S.roll = 0;
+        S.status = "Pick a box on the score sheet.";
+      } else {
+        S.canRoll = true;
+      }
+      render();
+      if (isYahtzee(S.dice)) {
+        S.numYahtzees++;
+        showSplash();
+        render(); // previews may now include the +100 bonus
+      }
+    }, 900 + Math.floor(Math.random() * 100));
+  }
+
+  function toggleHold(i) {
+    if (!S.selecting || S.rolling) return;
+    S.held[i] = !S.held[i];
+    render();
+  }
+
+  function scoreBox(cat, col) {
+    const key = `${cat}:${col}`;
+    if (!S.scoring || S.rolling || key in S.scores) return;
+    S.scores[key] = scoreFor(cat, S.dice, S.numYahtzees);
+    if (settings.score) play(CLICK_WAV);
+    S.undo = { key, roll: S.roll, frame: S.frame, status: S.status };
+    S.lastKey = key;
+    S.scoring = false;
+    S.selecting = false;
+    S.roll = 0;
+    S.canRoll = true;
+    S.frame = "Dice";
+    S.status = 'Press "Roll" to roll the dice.';
+    if (Object.keys(S.scores).length === TOTAL_BOXES) finishGame();
+    render();
+  }
+
+  function undo() {
+    const u = S.undo;
+    if (!u || S.rolling) return;
+    delete S.scores[u.key];
+    S.roll = u.roll;
+    S.canRoll = u.roll !== 0;
+    S.selecting = u.roll !== 0;
+    S.scoring = true;
+    S.frame = u.frame;
+    S.status = u.status;
+    S.undo = null;
+    render();
+  }
+
+  function newGame() {
+    Object.assign(S, {
+      dice: [6, 6, 6, 6, 6], held: [false, false, false, false, false], roll: 0, rolling: false,
+      selecting: false, scoring: false, canRoll: true, numYahtzees: 0, scores: {},
+      frame: "Dice", status: 'Press "Roll" to roll the dice.', undo: null, lastKey: null, gameOver: false,
+    });
+    render();
+  }
+
+  async function finishGame() {
+    S.gameOver = true;
+    S.undo = null;
+    S.canRoll = true;
+    const total = totals().game;
+    S.status = `Game over! Final score: ${total}.`;
+    render();
+    if (total > highScores[9].score) {
+      if (settings.hiscore) fanfare(HISCORE_TUNE);
+      $("nameScore").textContent = total;
+      const nameInput = $("nameInput");
+      nameInput.value = store.get("tripleYahtzee.lastName", "");
+      const answer = await ask($("nameDlg"), nameInput);
+      const name = (answer === "ok" && nameInput.value.trim()) || "Anonymous";
+      if (answer === "ok") store.set("tripleYahtzee.lastName", nameInput.value.trim());
+      const entry = { name, date: new Date().toLocaleDateString(), score: total, id: Date.now() };
+      const idx = highScores.findIndex(h => h.score < total);
+      highScores.splice(idx, 0, entry);
+      highScores.length = 10;
+      store.set(HS_KEY, highScores);
+      showHighScores(entry.id);
+    }
+  }
+
+  // ---- Dialogs -----------------------------------------------------------
+  function ask(dlg, focusEl) {
+    return new Promise(resolve => {
+      dlg.addEventListener("close", () => resolve(dlg.returnValue), { once: true });
+      dlg.returnValue = "";
+      dlg.showModal();
+      if (focusEl) { focusEl.focus(); focusEl.select?.(); }
+    });
+  }
+  const confirmBox = text => { $("confirmText").textContent = text; return ask($("confirmDlg")); };
+
+  function showHighScores(highlightId) {
+    const body = $("hsBody");
+    body.textContent = "";
+    highScores.forEach((h, i) => {
+      const tr = document.createElement("tr");
+      if (highlightId && h.id === highlightId) tr.className = "me";
+      const empty = !h.score;
+      [String(i + 1), empty ? "Empty" : h.name, empty ? "" : h.date, empty ? "" : String(h.score)].forEach((t, k) => {
+        const td = document.createElement("td");
+        td.textContent = t;
+        if (k === 3) td.className = "num";
+        if (empty && k === 1) td.className = "empty";
+        tr.append(td);
+      });
+      body.append(tr);
+    });
+    ask($("hsDlg")).then(async v => {
+      if (v === "clear" && await confirmBox("Clear all high scores?") === "yes") {
+        highScores = emptyScores();
+        store.set(HS_KEY, highScores);
+      }
+    });
+  }
+
+  let splashTimer = 0;
+  function showSplash() {
+    const el = $("splash");
+    $("splashSub").textContent = S.numYahtzees > 3
+      ? `Yahtzee #${S.numYahtzees} — +100 bonus in any box!`
+      : (S.numYahtzees > 1 ? `Yahtzee #${S.numYahtzees} this game` : "");
+    el.classList.remove("show"); void el.offsetWidth; el.classList.add("show");
+    if (settings.yahtzee) fanfare(YAHTZEE_TUNE);
+    clearTimeout(splashTimer);
+    splashTimer = setTimeout(() => el.classList.remove("show"), 4000);
+  }
+  $("splash").addEventListener("click", () => $("splash").classList.remove("show"));
+
+  // ---- Wiring ------------------------------------------------------------
+  rollBtn.addEventListener("click", roll);
+  undoBtn.addEventListener("click", undo);
+  $("hsBtn").addEventListener("click", () => showHighScores());
+  $("aboutBtn").addEventListener("click", () => ask($("aboutDlg")));
+  $("resetBtn").addEventListener("click", async () => {
+    if (S.rolling) return;
+    if (await confirmBox("Are you sure you want to reset the game?") === "yes") newGame();
+  });
+  $("settingsBtn").addEventListener("click", () => {
+    document.querySelectorAll("[data-setting]").forEach(cb => { cb.checked = !!settings[cb.dataset.setting]; });
+    ask($("settingsDlg"));
+  });
+  document.querySelectorAll("[data-setting]").forEach(cb => cb.addEventListener("change", () => {
+    settings[cb.dataset.setting] = cb.checked;
+    store.set(SET_KEY, settings);
+  }));
+
+  document.addEventListener("keydown", e => {
+    if (e.ctrlKey || e.metaKey || e.altKey || document.querySelector("dialog[open]")) return;
+    const k = e.key.toLowerCase();
+    if (k === "r") { e.preventDefault(); roll(); }
+    else if (k === "u") { e.preventDefault(); undo(); }
+    else if (k >= "1" && k <= "5") { e.preventDefault(); toggleHold(Number(k) - 1); }
+  });
+
+  buildSheet();
+  buildDice();
+  render();
+})();
+</script>
+</body>
+</html>
